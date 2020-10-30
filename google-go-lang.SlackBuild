@@ -6,7 +6,7 @@
 # Taken over by Vincent Batts vbatts@hashbangbash.com
 # Modified by Liam Whalen whalen.ld@gmail.com
 
-# Copyright (c) 2016 Liam Whalen
+# Copyright (c) 2016, 2020 Liam Whalen
 # Copyright (c) 2012, 2013, 2014, 2015  Vincent Batts
 # Copyright (c) 2012 Eric Schultz
 #
@@ -29,7 +29,7 @@
 # SOFTWARE.
 
 PRGNAM=google-go-lang
-VERSION=${VERSION:-1.6}
+VERSION=${VERSION:-1.15}
 BOOTSTRAP_VERSION=${BOOTSTRAP_VERSION:-1.5.3}
 BUILD=${BUILD:-1}
 TAG=${TAG:-_SBo}
@@ -87,7 +87,8 @@ rm -rf $PKG
 mkdir -p $TMP $PKG/usr/lib${LIBDIRSUFFIX} $OUTPUT
 cd $PKG/usr/lib${LIBDIRSUFFIX}
 tar xvf $CWD/go$VERSION.src.tar.gz
-cd go
+cd src 
+
 chown -R root:root .
 find -L . \
  \( -perm 777 -o -perm 775 -o -perm 750 -o -perm 711 -o -perm 555 \
@@ -105,7 +106,6 @@ export GOARCH="${GARCH}"
 unset BASH_ENV # Not sure why, but this causes run.bash to fail --rworkman
 
 mkdir -p "${GOBIN}"
-cd src
 
 if [ "x${RUN_TEST}" = "xtrue" ] ; then
     LC_ALL=C \
@@ -114,8 +114,6 @@ else
     LC_ALL=C \
     ./make.bash
 fi
-
-cd ..
 
 ln -sf $PKG/usr/lib${LIBDIRSUFFIX}/go/pkg/tool/linux_${GOARCH}/cgo $PKG/usr/bin/cgo
 ln -sf $PKG/usr/lib${LIBDIRSUFFIX}/go/pkg/tool/linux_${GOARCH}/ebnflint $PKG/usr/bin/ebnflint
@@ -148,6 +146,10 @@ chmod 0755 $PKG/etc/profile.d/go.sh.new
 cat $CWD/README > README
 
 mkdir -p $PKG/usr/doc/$PRGNAM-$VERSION
+
+#These files are no longer in the base path and I am too lazy to look
+#for them, so I am touching them here in case they are restored.
+touch AUTHORS CONTRIBUTORS LICENSE PATENTS README VERSION
 cp -a \
   AUTHORS CONTRIBUTORS LICENSE PATENTS README VERSION \
   $PKG/usr/doc/$PRGNAM-$VERSION
